@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\PlayerController;
+use App\Http\Controllers\TeamController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +17,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+Route::middleware('auth')->group(function(){
+    Route::get('/', [TeamController::class, 'index']);
+    Route::post('/teams/{team}/comments', [CommentController::class, 'store']);
+    Route::get('/teams/{team}', [TeamController::class, 'show']);
+    
+    Route::get('/player/{player}', [PlayerController::class, 'show']);
+    
+    Route::get('/logout', [UserController::class, 'logout']);
+});
+
+Route::middleware('guest')->group(function(){
+    Route::get('/register', [UserController::class, 'getRegisterForm']);
+    Route::post('/register', [UserController::class, 'register']);
+    
+    Route::get('/login', [UserController::class, 'getLoginForm']);
+    Route::post('/login', [UserController::class, 'login'])->name('login');
 });
